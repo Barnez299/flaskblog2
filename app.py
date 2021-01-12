@@ -59,7 +59,11 @@ def register():
 def login():
     form=LoginForm()
     if form.validate_on_submit():
-        return redirect(url_for('account'))
+        if form.email.data =='admin@mail.me' and form.password.data =='password':
+            flash(f'Log in successfull.', category='success')
+            return redirect(url_for('account'))
+        else:
+            flash(f'Please check user details!', category='danger')
     return render_template('login.html', title='Login', form=form)
 
 @app.route("/logout")
