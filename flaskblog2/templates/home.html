@@ -5,7 +5,7 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title">{{post.title}}</h5>
-                <small class="text-muted author">Author:{{post.author}} on {{post.date_posted}} </small>
+                <small class="text-muted author">{{post.author.username}} ({{post.date_posted.strftime('%Y-%m-%d')}})</small>
             </div>
             <div class="card-body">
                 <p class="card-text">{{post.content}}</p>
