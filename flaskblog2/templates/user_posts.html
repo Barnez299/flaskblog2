@@ -1,6 +1,10 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container">
-    <h1 class="mb-3">Posts by {{user.username}}({{posts.total}})</h1>
+    <div class="col-lg-8 col-md-12 mb-5 mx-auto">
+        <h3 class="mb-3">Posts by {{user.username}}</h3>
+        <small class="text-muted">Contribution: {{posts.total}} posts</small>
+    </div>
+
     {%for post in posts.items%}
     <div class="col-lg-8 col-md-12 mb-5 mx-auto">
         <div class="card">

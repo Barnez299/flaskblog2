@@ -2,10 +2,11 @@ import os
 import secrets
 from PIL import Image
 from flask import redirect, url_for, render_template, flash, request, abort
-from flaskblog2 import app, db, bcrypt
-from flaskblog2.forms import LoginForm, RegistrationForm, UpdateAccountForm, PostForm
+from flaskblog2 import app, db, bcrypt, mail
+from flaskblog2.forms import LoginForm, RegistrationForm, UpdateAccountForm, PostForm, RequestResetForm, ResetPasswordForm
 from flaskblog2.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
+from flask_mail import Message
 
 
 
@@ -89,7 +90,6 @@ def logout():
     return redirect(url_for('home'))
 
 # create new post
-
 @app.route("/post/new", methods=['GET','POST'])
 @login_required
 def new_post():
@@ -100,14 +100,14 @@ def new_post():
         db.session.commit()
         flash('Post created successfully', category='success')
         return redirect(url_for('home'))
-    return render_template('create_post.html', title='New Post', form=form)
+    return render_template('create_post.html', title='New Post', form=form, legend='New Post')
 
 
 # get single post
 @app.route("/post/<int:post_id>", methods=['GET','POST'])
 def post(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template('post.html', title=post.title, post=post, legend='New Post')
+    return render_template('post.html', title=post.title, post=post)
 
 
 # update single post
@@ -145,10 +145,58 @@ def delete_post(post_id):
 
 
 # display all posts for one user only
-
 @app.route("/user/<string:username>")
 def user_posts(username):
     page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.filter_by(author=user).order_by(Post.date_posted.desc()).paginate(page=page, per_page=4)
     return render_template('user_posts.html', title='Home', posts=posts, user=user)
+
+
+
+
+# reset password route
+
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request',
+                  sender='flaskybarnpy@gmail.com',
+                  recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+{url_for('reset_token', token=token, _external=True)}
+Please ignore this email if you did not request a password reset.
+'''
+    mail.send(msg)
+
+
+
+@app.route("/reset_password", methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'info')
+        return redirect(url_for('login'))
+    return render_template('reset_request.html', title='Reset Password', form=form)
+
+
+# reset password form
+@app.route("/reset_password/<token>", methods=['GET','POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('Token no longer valid or has expired.', category='warning')
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user.password = hashed_password
+        db.session.commit()
+        flash(f'Password updated succesfully for {form.username.data}!', category='success')
+        return redirect(url_for('login'))
+    return render_template('reset_token.html', title='Rest Password', form=form)
