@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = 'False'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'info'
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
@@ -25,4 +25,12 @@ app.config['MAIL_PASSWORD'] = '******'
 mail = Mail(app)
 
 
-from flaskblog2 import routes
+
+
+from flaskblog2.users.routes import users
+from flaskblog2.posts.routes import posts
+from flaskblog2.main.routes import main
+
+app.register_blueprint(users)
+app.register_blueprint(posts)
+app.register_blueprint(main)
