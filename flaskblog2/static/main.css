@@ -9,3 +9,7 @@ legend {
 .author {
     color: blue;
 }
+
+img {
+    object-fit: cover;
+}
