@@ -7,6 +7,8 @@ from flaskblog2.users.forms import (RegistrationForm, LoginForm, UpdateAccountFo
                                    RequestResetForm, ResetPasswordForm)
 from flaskblog2.users.utils import save_picture, send_reset_email
 
+
+
 users = Blueprint('users', __name__)
 
 
@@ -106,6 +108,6 @@ def reset_token(token):
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user.password = hashed_password
         db.session.commit()
-        flash(f'Password updated succesfully for {form.username.data}!', category='success')
+        flash(f'Password updated succesfully. You can now log in.', category='success')
         return redirect(url_for('users.login'))
     return render_template('reset_token.html', title='Rest Password', form=form)
