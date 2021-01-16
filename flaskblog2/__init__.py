@@ -30,7 +30,9 @@ mail = Mail(app)
 from flaskblog2.users.routes import users
 from flaskblog2.posts.routes import posts
 from flaskblog2.main.routes import main
+from flaskblog2.errors.handlers import errors
 
 app.register_blueprint(users)
 app.register_blueprint(posts)
 app.register_blueprint(main)
+app.register_blueprint(errors)
