@@ -4,7 +4,7 @@ from flask import (render_template, url_for, flash,
 from flask_login import current_user, login_required
 from flaskblog2 import db
 from flaskblog2.models import Post
-from flaskblog2.posts.forms import PostForm
+from flaskblog2.posts.forms import PostForm, SearchForm
 
 posts = Blueprint('posts', __name__)
 
@@ -62,3 +62,12 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been deleted!', 'success')
     return redirect(url_for('main.home'))
+
+
+# # search all posts
+# @posts.route("/search")
+# def search():
+#     q = request.args.get('q')
+#     form = SearchForm()
+#     return render_template('post_search.html', title='Search', form=form)
+

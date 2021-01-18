@@ -9,3 +9,8 @@ class PostForm(FlaskForm):
     title = StringField(label='Title', validators=[DataRequired()])
     content = TextAreaField(label='Content', validators=[DataRequired()])
     submit = SubmitField(label='Post')
+
+
+class SearchForm(FlaskForm):
+    search = StringField(label='Search', validators=[DataRequired()])
+    submit = SubmitField(label='Search')

@@ -10,6 +10,11 @@ legend {
     color: blue;
 }
 
-img {
-    object-fit: cover;
+.search {
+    position: sticky;
+    /* The magic */
+    z-index: 1;
+    /* Ensure it stays on top of other player divs */
+    top: 0px;
+    /* Where it should stick to */
 }
